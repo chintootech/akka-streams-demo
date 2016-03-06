@@ -1,5 +1,6 @@
 package demo5;
 
+import java.util.concurrent.CompletionStage;
 import java.util.stream.IntStream;
 
 import akka.actor.ActorSystem;
@@ -28,9 +29,9 @@ public class ErrorHandling3 {
     IntStream stream = IntStream.range(0, 6);
     Source<Integer, ?> source = Source.from(() -> stream.iterator()).map(x -> 100 / x)
         .withAttributes(ActorAttributes.withSupervisionStrategy(decider));
-    Future<Integer> result = source.runWith(Sink.fold(0, (x, y) -> x + y), materializer);
-    Integer res = Await.result(result, Duration.Inf());
-
-    System.out.println(res); // this will print 228
+    CompletionStage<Integer> result = source.runWith(Sink.fold(0, (x, y) -> x + y), materializer);
+    // this will print 228
+    result.thenAcceptAsync(res -> System.out.println("Result: " + res),
+        system.dispatcher());
   }
 }

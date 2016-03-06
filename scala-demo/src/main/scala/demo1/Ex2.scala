@@ -20,4 +20,5 @@ object Ex2 extends App {
   val flow = Flow[Int].map(_ + 10).filter(_ % 2 == 0)
   val sink = Sink.foreach(println)
   source.via(flow).runWith(sink)
+  system.terminate
 }

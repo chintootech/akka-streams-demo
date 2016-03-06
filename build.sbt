@@ -1,8 +1,10 @@
-import com.typesafe.sbteclipse.core._
+name := "akka-stream-demo"
+ 
+version := "0.1.0"
+ 
+scalaVersion := "2.11.7"
 
-name := """akka-streams-demo"""
-
-version := "0.1"
+val akkaVersion = "2.3.7"
 
 initialize := {
   val _ = initialize.value
@@ -13,13 +15,10 @@ initialize := {
 lazy val commonSettings = Seq(
   scalaVersion := "2.11.7",
   libraryDependencies ++= Seq(
-    "com.typesafe.akka" %% "akka-stream-experimental" % "2.0-M1"
+    //"com.typesafe.akka" %% "akka-stream-experimental" % "2.0-M2"
+    "com.typesafe.akka" % "akka-stream_2.11" % "2.4.2"
   ),
   javacOptions ++= Seq("-source", "1.8", "-target", "1.8", "-Xlint")
-)
-
-lazy val javaSettings = Seq(
-  EclipseKeys.projectFlavor := EclipseProjectFlavor.Java // this requires my own patched sbteclipse (I'm working on a PR...)
 )
 
 lazy val scalaSeed = project
@@ -33,4 +32,7 @@ lazy val scalaDemo = project
 lazy val javaDemo = project
   .in(file(".") / "java-demo")
   .settings(commonSettings: _*)
-  .settings(javaSettings: _*)
+  .settings(commonSettings: _*)
+
+javacOptions ++= Seq("-source", "1.8", "-target", "1.8", "-Xlint")
+scalacOptions ++= Seq("-feature")

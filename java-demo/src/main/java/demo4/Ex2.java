@@ -1,22 +1,11 @@
 package demo4;
 
-import java.util.stream.IntStream;
-
+import akka.NotUsed;
 import akka.actor.ActorSystem;
-import akka.stream.ActorMaterializer;
-import akka.stream.ClosedShape;
-import akka.stream.FlowShape;
-import akka.stream.Outlet;
-import akka.stream.SinkShape;
-import akka.stream.UniformFanInShape;
-import akka.stream.UniformFanOutShape;
-import akka.stream.javadsl.Broadcast;
-import akka.stream.javadsl.Flow;
-import akka.stream.javadsl.FlowGraph;
-import akka.stream.javadsl.Merge;
-import akka.stream.javadsl.RunnableGraph;
-import akka.stream.javadsl.Sink;
-import akka.stream.javadsl.Source;
+import akka.stream.*;
+import akka.stream.javadsl.*;
+
+import java.util.stream.IntStream;
 
 public class Ex2 {
   public static void main(String[] args) throws Exception {
@@ -28,9 +17,9 @@ public class Ex2 {
     // source → merge → printer → bcast → sink.ignore
     //             ↑                ↓
     //             ←←←←←←←←←
-    RunnableGraph<?> runnable = RunnableGraph.fromGraph(FlowGraph.create(b -> {
+    RunnableGraph<NotUsed> runnable = RunnableGraph.fromGraph(GraphDSL.create(b -> {
       IntStream numbers = IntStream.iterate(1, x -> x + 1);
-      Outlet<Integer> source = b.add(Source.from(() -> numbers.iterator())).outlet();
+      Outlet<Integer> source = b.add(Source.from(() -> numbers.iterator())).out();
       UniformFanInShape<Integer, Integer> merge = b.add(Merge.create(2));
       UniformFanOutShape<Integer, Integer> bcast = b.add(Broadcast.create(2));
       FlowShape<Integer, Integer> printer = b.add(Flow.of(Integer.class).map(x -> {

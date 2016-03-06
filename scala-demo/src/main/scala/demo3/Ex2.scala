@@ -1,22 +1,19 @@
 package demo3
 
 import akka.actor.ActorSystem
-import akka.stream.ActorMaterializer
-import akka.stream._
+import akka.stream.{ActorMaterializer, _}
+import akka.stream.scaladsl.GraphDSL.Implicits._
 import akka.stream.scaladsl._
-import scala.concurrent.duration._
-import akka.stream.scaladsl.FlowGraph.Implicits._
-import FlowGraph.Implicits._
-import scala.concurrent.Future
+
 import scala.concurrent.Await
+import scala.concurrent.duration._
 
 object Ex2 extends App {
   implicit val system = ActorSystem("demo3")
   implicit val materializer = ActorMaterializer()
-  import system.dispatcher
 
   // Create a new fan-in junction that takes 3 Int inputs and outputs the max
-  val maxOfThree = FlowGraph.create() { implicit b =>
+  val maxOfThree = GraphDSL.create() { implicit b =>
     val zip1 = b.add(ZipWith[Int, Int, Int](math.max))
     val zip2 = b.add(ZipWith[Int, Int, Int](math.max))
 
@@ -29,7 +26,7 @@ object Ex2 extends App {
 
   val sink = Sink.head[Int]
   val g = RunnableGraph.fromGraph(
-    FlowGraph.create(sink) { implicit b => out =>
+    GraphDSL.create(sink) { implicit b => out =>
       val s1 = Source.single(1)
       val s2 = Source.single(2)
       val s3 = Source.single(3)
@@ -47,4 +44,5 @@ object Ex2 extends App {
   val max = g.run()
   val res = Await.result(max, Duration.Inf)
   println(res)
+  system.terminate
 }

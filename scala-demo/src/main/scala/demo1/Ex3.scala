@@ -20,4 +20,5 @@ object Ex3 extends App {
   val foldingSink = Sink.fold[Int, Int](0)(_ + _)
   val foldingResult = numbers.runWith(foldingSink)
   println(Await.result(foldingResult, Duration.Inf))
+  system.terminate
 }

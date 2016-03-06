@@ -5,7 +5,7 @@ import akka.stream.ActorMaterializer
 import akka.stream._
 import akka.stream.scaladsl._
 import scala.concurrent.duration._
-import akka.stream.scaladsl.FlowGraph.Implicits._
+import akka.stream.scaladsl.GraphDSL.Implicits._
 import scala.concurrent.Await
 
 object ErrorHandling1 extends App {

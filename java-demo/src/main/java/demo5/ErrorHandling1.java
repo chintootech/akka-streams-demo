@@ -1,5 +1,6 @@
 package demo5;
 
+import java.util.concurrent.CompletionStage;
 import java.util.stream.IntStream;
 
 import akka.actor.ActorSystem;
@@ -18,9 +19,9 @@ public class ErrorHandling1 {
     // // Here is a stream that will complete with a failure because of a division by zero
     IntStream stream = IntStream.range(0, 5);
     Source<Integer, ?> source = Source.from(() -> stream.iterator()).map(x -> 100 / x);
-    Future<Integer> result = source.runWith(Sink.fold(0, (x, y) -> x + y), materializer);
-    Integer res = Await.result(result, Duration.Inf());
-
-    System.out.println(res); // this will print an ArithmeticException
+    CompletionStage<Integer> result = source.runWith(Sink.fold(0, (x, y) -> x + y), materializer);
+    result.thenAcceptAsync(res -> System.out.println("Result: " + res),
+        system.dispatcher()); // this will print an ArithmeticException
+    system.shutdown();
   }
 }

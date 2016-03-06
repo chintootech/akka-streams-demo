@@ -5,7 +5,7 @@ import akka.stream.ActorMaterializer
 import akka.stream._
 import akka.stream.scaladsl._
 import scala.concurrent.duration._
-import akka.stream.scaladsl.FlowGraph.Implicits._
+import akka.stream.scaladsl.GraphDSL.Implicits._
 
 object Ex2 extends App {
   implicit val system = ActorSystem("demo4")
@@ -17,9 +17,9 @@ object Ex2 extends App {
   // source → merge → printer → bcast → sink.ignore
   //             ↑                ↓
   //             ←←←←←←←←←
-  val source = Source(() => Iterator.from(1))
+  val source = Source.fromIterator(() => Iterator.from(1))
   val g = RunnableGraph.fromGraph(
-    FlowGraph.create() { implicit b =>
+    GraphDSL.create() { implicit b =>
       val merge = b.add(Merge[Int](2))
       val bcast = b.add(Broadcast[Int](2))
       val printer = Flow[Int].map {e => println(e); e}
@@ -30,6 +30,8 @@ object Ex2 extends App {
     }
   )
   g.run()
+
+  system.terminate
 
   // Show that it deadlocks
   // Then show how to fix it with an unfair PreferredMerge junction
