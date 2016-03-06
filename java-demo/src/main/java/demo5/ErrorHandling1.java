@@ -22,6 +22,6 @@ public class ErrorHandling1 {
     CompletionStage<Integer> result = source.runWith(Sink.fold(0, (x, y) -> x + y), materializer);
     result.thenAcceptAsync(res -> System.out.println("Result: " + res),
         system.dispatcher()); // this will print an ArithmeticException
-    system.shutdown();
+    system.terminate();
   }
 }

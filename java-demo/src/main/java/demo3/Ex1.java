@@ -41,6 +41,6 @@ public class Ex1 {
     res.thenAcceptAsync(c -> System.out.println("Res: " + c),
         system.dispatcher());
 
-    system.shutdown();
+    system.terminate();
   }
 }
